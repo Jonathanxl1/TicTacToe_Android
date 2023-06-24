@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private int jugador;
     private String [] [] array;
 
+    private int row = 0 ;
+    private int column = 0 ;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,32 @@ public class MainActivity extends AppCompatActivity {
         inicializar();
         inicializar_array();
 
+
+
+        Button arrayButtons[] = {casilla1,casilla2,casilla3,casilla4,casilla5,casilla6,casilla7,casilla8,casilla9};
+        for(Button celda :arrayButtons){
+
+            celda.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String imprimir = validar_casilla(String.valueOf(celda.getText()));
+                    array[row][column] = imprimir;
+                    celda.setText(imprimir);
+                    // cada 2 subo 1 nivel y subo la logica
+
+                }
+            });
+            row+=1;
+            if(row <= 2 || (row >= 3 && row <= 5) || (row >= 6 && row < 8) ){
+                column += 1;
+            }else if (row == 8){
+                column = row = 0;
+                break;
+            }else{
+                column = 0;
+            }
+        }
+        /*
         casilla1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
                 casilla9.setText(imprimir);
             }
         });
+
+         */
     }
 
     private void inicializar(){
@@ -126,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         txtJugador = (TextView) findViewById(R.id.txtJugador);
         array = new String[3][3];
         jugador = 1;
+
     }
 
     private void inicializar_array (){

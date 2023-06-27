@@ -3,10 +3,13 @@ package com.example.triki;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     private Button casilla1;
@@ -26,6 +29,11 @@ public class MainActivity extends AppCompatActivity {
     private int row = 0 ;
     private int column = 0 ;
 
+    private Button[] arrayButtons;
+    private int cont;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,113 +43,31 @@ public class MainActivity extends AppCompatActivity {
         inicializar_array();
 
 
+        for(Button Zelda :arrayButtons){
 
-        Button arrayButtons[] = {casilla1,casilla2,casilla3,casilla4,casilla5,casilla6,casilla7,casilla8,casilla9};
-        for(Button celda :arrayButtons){
+            Zelda.setOnClickListener(new View.OnClickListener() {
+                final int rowInd = row;
+                final int colInd = column;
 
-            celda.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String imprimir = validar_casilla(String.valueOf(celda.getText()));
-                    array[row][column] = imprimir;
-                    celda.setText(imprimir);
-                    // cada 2 subo 1 nivel y subo la logica
-
+                    String imprimir = validar_casilla(String.valueOf(Zelda.getText()));
+                    array[rowInd][colInd] = imprimir;
+                    Zelda.setText(imprimir);
+                    validar_filas_columnas();
                 }
             });
-            row+=1;
-            if(row <= 2 || (row >= 3 && row <= 5) || (row >= 6 && row < 8) ){
-                column += 1;
-            }else if (row == 8){
-                column = row = 0;
-                break;
-            }else{
+            column +=1;
+            if(column>2){
                 column = 0;
+                row +=1;
             }
+
+
         }
-        /*
-        casilla1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[0][0]);
-                array[0][0] = imprimir;
-                casilla1.setText(imprimir);
-            }
-        });
 
-        casilla2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[0][1]);
-                array[0][1] = imprimir;
-                casilla2.setText(imprimir);
-            }
-        });
 
-        casilla3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[0][2]);
-                array[0][2] = imprimir;
-                casilla3.setText(imprimir);
-            }
-        });
 
-        casilla4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[1][0]);
-                array[1][0] = imprimir;
-                casilla4.setText(imprimir);
-            }
-        });
-
-        casilla5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[1][1]);
-                array[1][1] = imprimir;
-                casilla5.setText(imprimir);
-            }
-        });
-
-        casilla6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[1][2]);
-                array[1][2] = imprimir;
-                casilla6.setText(imprimir);
-            }
-        });
-
-        casilla7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[2][0]);
-                array[2][0] = imprimir;
-                casilla7.setText(imprimir);
-            }
-        });
-
-        casilla8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[2][1]);
-                array[2][1] = imprimir;
-                casilla8.setText(imprimir);
-            }
-        });
-
-        casilla9.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String imprimir = validar_casilla(array[2][2]);
-                array[2][2] = imprimir;
-                casilla9.setText(imprimir);
-            }
-        });
-
-         */
     }
 
     private void inicializar(){
@@ -156,13 +82,15 @@ public class MainActivity extends AppCompatActivity {
         casilla9 = (Button) findViewById(R.id.btn9);
         txtJugador = (TextView) findViewById(R.id.txtJugador);
         array = new String[3][3];
+        arrayButtons = new Button[] {casilla1,casilla2,casilla3,casilla4,casilla5,casilla6,casilla7,casilla8,casilla9};
+
         jugador = 1;
 
     }
 
     private void inicializar_array (){
         for (int i=0; i<array.length; i++){
-            for(int j=0; j<array[0].length; j++){
+            for(int j=0; j<array[i].length; j++){
                 array[i][j] = "";
             }
         }
@@ -184,6 +112,13 @@ public class MainActivity extends AppCompatActivity {
     private String validar_casilla(String celda){
         if(celda.equals("")){
             String imprimir = turnoJugador();
+            cont += 1;
+            if(cont == 9) {
+                limpiar_botones();
+                inicializar_array();
+                Toast.makeText(MainActivity.this, String.valueOf(cont), Toast.LENGTH_LONG).show();
+                imprimir="";
+            }
             return imprimir;
         }
         else {
@@ -191,5 +126,63 @@ public class MainActivity extends AppCompatActivity {
             return celda;
         }
     }
+
+    private void validar_filas_columnas() {
+        boolean validation = true;
+        for (int n=0; n<2; n++) {
+            if (validation) {
+                for (int i = 0; i < array.length; i++) {
+                    int suma = 0;
+                    for (int j = 0; j < array[0].length; j++) {
+                        int fila;
+                        int colum;
+                        if (n == 0) {
+                            fila = i;
+                            colum = j;
+                        } else {
+                            fila = j;
+                            colum = i;
+                        }
+                        if (array[fila][colum] == "X") {
+                            suma = suma + 1;
+                        } else if (array[fila][colum] == "O") {
+                            suma = suma - 1;
+                        }
+                    }
+                    if (suma == 3) {
+                        ganador("Ganó el jugador 1");
+                        limpiar_botones();
+                        validation = false;
+                        break;
+                    } else if (suma == -3) {
+                        ganador("Ganó el jugador 2");
+                        limpiar_botones();
+                        validation = false;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void limpiar_botones() {
+        casilla1.setText("");
+        casilla2.setText("");
+        casilla3.setText("");
+        casilla4.setText("");
+        casilla5.setText("");
+        casilla6.setText("");
+        casilla7.setText("");
+        casilla8.setText("");
+        casilla9.setText("");
+    }
+
+    private void ganador(String ganador) {
+        Toast.makeText(MainActivity.this, ganador, Toast.LENGTH_LONG).show();
+        inicializar();
+        inicializar_array();
+    }
+
+
 
 }
